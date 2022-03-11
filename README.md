@@ -20,8 +20,13 @@ This app expects the developer to put in the comic ID when the `ComicDetailView`
 
 ### High Level App Design
 ```mermaid
-flowchart TD;
-	A[App] -- Comid ID -- > B[Detail View];
-	B[Detail View] < -- > [DataSource];
+graph TD
+    A[App] -->|Comic ID| B[Comic Detail View]
+    B --> |Requests Data|C[View Model]
+    C --> |Publishers for View Data|B
+    C --> |Requests Data|D{Data Source}
+    D --> |Raw Data Types|C
+    D --> E[Live API]
+    D --> F[Mock Data]
 ```
 

@@ -17,11 +17,11 @@ protocol DataSource {
     func getImage(from imageData: ImageData) async throws -> UIImage?
 }
 
+fileprivate let comicApiUrlString = "https://gateway.marvel.com/v1/public/comics/"
+fileprivate let apiKey = ""
+fileprivate let privateKey = ""
+
 class LiveMarvelAPI: DataSource {
-    private let comicApiUrlString = "https://gateway.marvel.com/v1/public/comics/"
-    private let apiKey = "b18f9a5fda9e80a6ff6c05053b399ecb"
-    private let privateKey = "5f5b65c50397dd3fa35b2cb77633fb7a16028058"
-    
     @Published private var loading: Bool
     
     lazy var isLoading: AnyPublisher<Bool, Never> = {
