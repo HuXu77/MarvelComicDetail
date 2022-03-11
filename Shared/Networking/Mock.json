@@ -1,0 +1,152 @@
+{
+  "code": 200,
+  "status": "Ok",
+  "copyright": "© 2022 MARVEL",
+  "attributionText": "Data provided by Marvel. © 2022 MARVEL",
+  "attributionHTML": "<a href=\"http://marvel.com\">Data provided by Marvel. © 2022 MARVEL</a>",
+  "etag": "e0acfa1fa29a2fa44722cd28b33d63a5df7da6e5",
+  "data": {
+    "offset": 0,
+    "limit": 20,
+    "total": 1,
+    "count": 1,
+    "results": [
+      {
+        "id": 92260,
+        "digitalId": 0,
+        "title": "Punisher (2022) #1",
+        "issueNumber": 1,
+        "variantDescription": "",
+        "description": "WILL THE PUNISHER’S WAR END? Born of tragedy. Devoted to war. Unstoppable in his rage. As the Punisher, Frank Castle has become the most accomplished killer the world has ever seen. Now it’s time for him to face his true destiny. What shocking secret from Frank’s past will convince him to take the reins of the Marvel Universe’s most notorious clan of assassins? And once Frank becomes the warlord of the deadly ninjas of the Hand, will it also mean an end for the Punisher? Or a whole new bloody beginning? Join the superstar team of writer Jason Aaron and artists Jesْs Saiz and Paul Azaceta for an epic exploration of the dark and violent past and inevitable future of one of Marvel’s most iconic characters.",
+        "modified": "2021-12-15T09:07:44-0500",
+        "isbn": "",
+        "upc": "75960620044300111",
+        "diamondCode": "",
+        "ean": "",
+        "issn": "",
+        "format": "Comic",
+        "pageCount": 48,
+        "textObjects": [],
+        "resourceURI": "http://gateway.marvel.com/v1/public/comics/92260",
+        "urls": [
+          {
+            "type": "detail",
+            "url": "http://marvel.com/comics/issue/92260/punisher_2022_1?utm_campaign=apiRef&utm_source=b18f9a5fda9e80a6ff6c05053b399ecb"
+          },
+          {
+            "type": "purchase",
+            "url": "http://comicstore.marvel.com/Punisher-1/digital-comic/58823?utm_campaign=apiRef&utm_source=b18f9a5fda9e80a6ff6c05053b399ecb"
+          }
+        ],
+        "series": {
+          "resourceURI": "http://gateway.marvel.com/v1/public/series/31562",
+          "name": "Punisher (2022 - Present)"
+        },
+        "variants": [
+          {
+            "resourceURI": "http://gateway.marvel.com/v1/public/comics/94407",
+            "name": "Punisher (2022) #1 (Variant)"
+          },
+          {
+            "resourceURI": "http://gateway.marvel.com/v1/public/comics/94408",
+            "name": "Punisher (2022) #1 (Variant)"
+          }
+        ],
+        "collections": [],
+        "collectedIssues": [],
+        "dates": [
+          {
+            "type": "onsaleDate",
+            "date": "2022-03-09T00:00:00-0500"
+          },
+          {
+            "type": "focDate",
+            "date": "2022-02-07T00:00:00-0500"
+          }
+        ],
+        "prices": [
+          {
+            "type": "printPrice",
+            "price": 5.99
+          }
+        ],
+        "thumbnail": {
+          "path": "placeholder",
+          "extension": "png"
+        },
+        "images": [
+          {
+            "path": "http://i.annihil.us/u/prod/marvel/i/mg/8/70/621e2ea90ab31",
+            "extension": "jpg"
+          }
+        ],
+        "creators": {
+          "available": 6,
+          "collectionURI": "http://gateway.marvel.com/v1/public/comics/92260/creators",
+          "items": [
+            {
+              "resourceURI": "http://gateway.marvel.com/v1/public/creators/11463",
+              "name": "Jason Aaron",
+              "role": "writer"
+            },
+            {
+              "resourceURI": "http://gateway.marvel.com/v1/public/creators/465",
+              "name": "Paul Azaceta",
+              "role": "inker"
+            },
+            {
+              "resourceURI": "http://gateway.marvel.com/v1/public/creators/2133",
+              "name": "Tom Brevoort",
+              "role": "editor"
+            },
+            {
+              "resourceURI": "http://gateway.marvel.com/v1/public/creators/12980",
+              "name": "Vc Cory Petit",
+              "role": "letterer"
+            },
+            {
+              "resourceURI": "http://gateway.marvel.com/v1/public/creators/12551",
+              "name": "Jesus Saiz",
+              "role": "penciler (cover)"
+            },
+            {
+              "resourceURI": "http://gateway.marvel.com/v1/public/creators/501",
+              "name": "Dave Stewart",
+              "role": "colorist"
+            }
+          ],
+          "returned": 6
+        },
+        "characters": {
+          "available": 0,
+          "collectionURI": "http://gateway.marvel.com/v1/public/comics/92260/characters",
+          "items": [],
+          "returned": 0
+        },
+        "stories": {
+          "available": 2,
+          "collectionURI": "http://gateway.marvel.com/v1/public/comics/92260/stories",
+          "items": [
+            {
+              "resourceURI": "http://gateway.marvel.com/v1/public/stories/205604",
+              "name": "cover from Punisher No More (2021) #1",
+              "type": "cover"
+            },
+            {
+              "resourceURI": "http://gateway.marvel.com/v1/public/stories/205605",
+              "name": "story from Punisher No More (2021) #1",
+              "type": "interiorStory"
+            }
+          ],
+          "returned": 2
+        },
+        "events": {
+          "available": 0,
+          "collectionURI": "http://gateway.marvel.com/v1/public/comics/92260/events",
+          "items": [],
+          "returned": 0
+        }
+      }
+    ]
+  }
+}
