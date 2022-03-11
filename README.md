@@ -13,9 +13,11 @@ It will load the Title, Description and Image from the API and show them on scre
  - Alamofire (5.5.0)
  - Combine, Swift and Swift UI
 
-
 ## Implementation and Running
 
+1) Install pods
+2) Update `MarvelComicApp.swift` to have the comic ID you want to load
+3) Update `MarvelAPI.swift` with the private and public API key to be used
 This app expects the developer to put in the comic ID when the `ComicDetailView` is initialized.  You can set this in `MarvelComicApp.swift`.
 
 ### High Level App Design
