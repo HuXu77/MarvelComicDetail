@@ -15,26 +15,29 @@ protocol DataSource {
     var isLoading: AnyPublisher<Bool, Never> { get }
     func getComicDetails(comicId id: Int) async throws -> ComicBaseData
     func getImage(from imageData: ImageData) async throws -> UIImage?
+    init(basePath: String)
 }
 
-fileprivate let comicApiUrlString = "https://gateway.marvel.com/v1/public/comics/"
 fileprivate let apiKey = ""
 fileprivate let privateKey = ""
 
 class LiveMarvelAPI: DataSource {
     @Published private var loading: Bool
+    private var basePath: String
     
-    lazy var isLoading: AnyPublisher<Bool, Never> = {
+    public lazy var isLoading: AnyPublisher<Bool, Never> = {
         $loading.eraseToAnyPublisher()
     }()
     
-    init() {
+    required init(basePath: String = "https://gateway.marvel.com/v1/public/") {
         self.loading = false
+        self.basePath = basePath
     }
     
     func getComicDetails(comicId id: Int) async throws -> ComicBaseData {
         self.loading = true
-        let fullPath = "\(comicApiUrlString)\(id)?\(generateAuthString())"
+        let comicSubPath = "comics/"
+        let fullPath = "\(basePath)\(comicSubPath)\(id)?\(generateAuthString())"
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<ComicBaseData, Error>) in
             AF.request(fullPath, method: .get)
                 .validate()
@@ -88,21 +91,24 @@ class LiveMarvelAPI: DataSource {
     }
 }
 
+#if DEBUG
 class MockMarvelAPI: DataSource {
     @Published private var loading: Bool
+    private let basePath: String
 
     lazy var isLoading: AnyPublisher<Bool, Never> = {
         $loading.eraseToAnyPublisher()
     }()
 
-    init() {
+    required init(basePath: String = "Mock") {
         self.loading = false
+        self.basePath = basePath
     }
 
     func getComicDetails(comicId id: Int) async throws -> ComicBaseData {
         self.loading = true
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<ComicBaseData, Error>) in
-            guard let path = Bundle.main.url(forResource: "Mock", withExtension: "json") else {
+            guard let path = Bundle.main.url(forResource: basePath, withExtension: "json") else {
                 self.loading = false
                 continuation.resume(throwing: DataError.unableToLoadJson)
                 return
@@ -132,6 +138,7 @@ class MockMarvelAPI: DataSource {
         }
     }
 }
+#endif
 
 enum DataError: Error {
     case unableToLoadJson

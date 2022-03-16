@@ -14,23 +14,33 @@ class ComicDetailViewModel: ObservableObject {
     @Published var title: String = "Loading..."
     @Published var description: String = "Loading..."
     @Published var image: UIImage
+    
     @Published var errorMessage: String?
     @Published var error: Bool = false
+    @Published var showErrorMessage: Bool = false
     
     private var dataSource: DataSource
     
     init() {
         self.image = UIImage(named: "placeholder") ?? UIImage()
+        #if DEBUG
         if PreviewHelper.isPreviewMode() {
             dataSource = MockMarvelAPI()
             return
         }
+        #endif
+        #if TEST
+        dataSource = MockMarvelAPI()
+        return
+        #endif
+        print("New View Model")
         dataSource = LiveMarvelAPI()
     }
     
     private var cancellable: Cancellable?
     
     func loadComicDetails(comicId id: Int) async {
+        error = false
         self.cancellable = dataSource.isLoading.sink {
             self.loading = $0
         }
@@ -54,6 +64,7 @@ class ComicDetailViewModel: ObservableObject {
         } catch {
             self.errorMessage = error.localizedDescription
             self.error = true
+            self.showErrorMessage = true
         }
     }
 }

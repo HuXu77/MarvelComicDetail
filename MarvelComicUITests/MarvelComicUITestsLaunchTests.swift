@@ -1,13 +1,13 @@
 //
-//  Tests_iOSLaunchTests.swift
-//  Tests iOS
+//  MarvelComicUITestsLaunchTests.swift
+//  MarvelComicUITests
 //
-//  Created by Mitchell Clay on 3/9/22.
+//  Created by Mitchell Clay on 3/15/22.
 //
 
 import XCTest
 
-class Tests_iOSLaunchTests: XCTestCase {
+class MarvelComicUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
