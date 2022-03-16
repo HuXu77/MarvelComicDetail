@@ -22,7 +22,7 @@ class ComicDetailViewModel: ObservableObject {
     private var dataSource: DataSource
     
     init() {
-        self.image = UIImage(named: "placeholder") ?? UIImage()
+        self.image = ComicDetailViewModel.placeholderImage()
         #if DEBUG
         if PreviewHelper.isPreviewMode() {
             dataSource = MockMarvelAPI()
@@ -33,12 +33,15 @@ class ComicDetailViewModel: ObservableObject {
         dataSource = MockMarvelAPI()
         return
         #endif
-        print("New View Model")
-        dataSource = LiveMarvelAPI()
+        dataSource = MockMarvelAPI()
     }
     
     private var cancellable: Cancellable?
     
+    /**
+        Load comic details from the datasource. This loads the data and image.
+        - Parameter id: comic ID to load
+     */
     func loadComicDetails(comicId id: Int) async {
         error = false
         self.cancellable = dataSource.isLoading.sink {
@@ -64,7 +67,14 @@ class ComicDetailViewModel: ObservableObject {
         } catch {
             self.errorMessage = error.localizedDescription
             self.error = true
+            self.image = ComicDetailViewModel.placeholderImage()
+            self.title = "Error"
+            self.description = "Error"
             self.showErrorMessage = true
         }
+    }
+    
+    static private func placeholderImage() -> UIImage {
+        return UIImage(named: "placeholder") ?? UIImage()
     }
 }

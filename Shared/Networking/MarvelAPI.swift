@@ -13,13 +13,25 @@ import Combine
 
 protocol DataSource {
     var isLoading: AnyPublisher<Bool, Never> { get }
+    /**
+            Load the `ComicBaseData` from a resource based on ID.
+            - Parameter id: comic ID
+            - Returns: `ComicBaseData`
+            - Throws: Error types, specified by the implementing classes
+     */
     func getComicDetails(comicId id: Int) async throws -> ComicBaseData
+    /**
+            Load the image using `ImageData` object.
+            - Parameter imageData: image data with path and extension
+            - Returns: `UIImage?`
+            - Throws: Error types, specified by the implementing classes
+     */
     func getImage(from imageData: ImageData) async throws -> UIImage?
     init(basePath: String)
 }
 
-fileprivate let apiKey = ""
-fileprivate let privateKey = ""
+fileprivate let apiKey = "b18f9a5fda9e80a6ff6c05053b399ecb"
+fileprivate let privateKey = "5f5b65c50397dd3fa35b2cb77633fb7a16028058"
 
 class LiveMarvelAPI: DataSource {
     @Published private var loading: Bool
@@ -91,7 +103,7 @@ class LiveMarvelAPI: DataSource {
     }
 }
 
-#if DEBUG
+#if DEBUG || TEST
 class MockMarvelAPI: DataSource {
     @Published private var loading: Bool
     private let basePath: String

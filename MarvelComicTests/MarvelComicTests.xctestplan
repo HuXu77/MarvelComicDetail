@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "9C71E293-FB94-4F26-877B-DE2248321616",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:MarvelComic.xcodeproj",
+        "identifier" : "CD70415927DFEB610033CC4F",
+        "name" : "MarvelComicTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:MarvelComic.xcodeproj",
+        "identifier" : "CD70416627E0D6680033CC4F",
+        "name" : "MarvelComicUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

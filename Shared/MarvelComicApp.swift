@@ -11,8 +11,9 @@ import SwiftUI
 struct MarvelComicApp: App {
     var body: some Scene {
         WindowGroup {
-            ComicDetailView(id: 92260)
-                .preferredColorScheme(.dark)
+            NavigationView {
+                ComicDetailView(id: 92260)
+            }.preferredColorScheme(.dark)
         }
     }
 }

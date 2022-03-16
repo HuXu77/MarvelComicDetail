@@ -10,26 +10,13 @@ import SwiftUI
 struct ComicDetailView: View {
     @State var id: Int
     @ObservedObject var viewModel: ComicDetailViewModel = .init()
-    #if DEBUG
+    #if DEBUG || TEST
     @State var showSettingModal: Bool = false
     #endif
     
     var body: some View {
         ScrollView {
             VStack {
-                HStack(alignment: viewModel.error ? .center : .firstTextBaseline) {
-                    titleView.unredacted()
-                    if viewModel.error {
-                        Spacer()
-                        Button {
-                            Task {
-                                await loadComicDetails()
-                            }
-                        } label: {
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                        }
-                    }
-                }
                 imageView
                 descriptionView
             }.task {
@@ -40,12 +27,20 @@ struct ComicDetailView: View {
                 Text(viewModel.errorMessage ?? "Unknown Error")
             }.background(Color.black)
         }.redacted(reason: viewModel.loading ? .placeholder : [])
-            .refreshable {
-                await loadComicDetails()
+            .navigationTitle(viewModel.title)
+            .toolbar {
+                ToolbarItem {
+                    if viewModel.error {
+                        ReloadView(action: loadComicDetails)
+                    }
+                }
             }
-        #if DEBUG
+            .navigationBarTitleDisplayMode(.inline)
+        #if DEBUG || TEST
             .sheet(isPresented: $showSettingModal, onDismiss: {
-                print("Comic Id: \(id)")
+                Task {
+                    await loadComicDetails()
+                }
             }) {
                 SettingsView(comicId: $id, isPresented: $showSettingModal)
             }
@@ -60,14 +55,14 @@ struct ComicDetailView: View {
     }
     
     private var titleView: some View {
-        Text(viewModel.error ? "Error" : viewModel.title)
+        Text(viewModel.title)
             .font(.largeTitle)
             .multilineTextAlignment(.center)
             .padding()
     }
     
     private var descriptionView: some View {
-        Text(viewModel.error ? "Error" : viewModel.description)
+        Text(viewModel.description)
             .font(.body)
             .padding()
     }
@@ -79,7 +74,6 @@ struct ComicDetailView: View {
                 Image(uiImage: viewModel.image)
                     .resizable()
                     .scaledToFit()
-                    .padding()
                     .accessibilityLabel(Text("Comic image"))
             }
             Spacer()
@@ -88,11 +82,13 @@ struct ComicDetailView: View {
                 .resizable()
                 .blur(radius: 6)
                 .scaledToFill()
-        }.padding()
+        }
+        .padding()
+        
     }
 }
 
-#if DEBUG
+#if DEBUG || TEST
 struct SettingsView: View {
     @Binding var comicId: Int
     @Binding var isPresented: Bool
@@ -108,14 +104,18 @@ struct SettingsView: View {
                 .navigationTitle("Settings")
                 .toolbar {
                     ToolbarItem {
-                        Button("Done") {
-                            comicId = Int(comicIdString) ?? 0
-                            isPresented = false
-                        }
+                        doneButton
                     }
                 }
         }.onAppear {
             comicIdString = String(comicId)
+        }
+    }
+    
+    var doneButton: some View {
+        Button("Done") {
+            comicId = Int(comicIdString) ?? 0
+            isPresented = false
         }
     }
 }
