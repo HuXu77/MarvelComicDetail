@@ -16,9 +16,10 @@ It will load the Title, Description and Image from the API and show them on scre
 ## Implementation and Running
 
 1) Install pods
-2) Update `MarvelComicApp.swift` to have the comic ID you want to load
+2) Update `MarvelComicApp.swift` to have the comic ID you want to load (you can change this also while the app is running)
 3) Update `MarvelAPI.swift` with the private and public API key to be used
-This app expects the developer to put in the comic ID when the `ComicDetailView` is initialized.  You can set this in `MarvelComicApp.swift`.
+
+This app expects the developer to put in the comic ID when the `ComicDetailView` is initialized.  You can set this in `MarvelComicApp.swift`.  Or you can use the shake gesture during the app's running and a settings will pop up and allow you to change the comic ID on the fly.
 
 ### High Level App Design
 ```mermaid

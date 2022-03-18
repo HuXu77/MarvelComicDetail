@@ -27,11 +27,22 @@ struct ComicDetailView: View {
                 Text(viewModel.errorMessage ?? "Unknown Error")
             }.background(Color.black)
         }.redacted(reason: viewModel.loading ? .placeholder : [])
-            .navigationTitle(viewModel.title)
+            .navigationTitle(viewModel.loading ? "" : viewModel.title)
             .toolbar {
-                ToolbarItem {
+                ToolbarItem(placement: .principal) {
                     if viewModel.error {
-                        ReloadView(action: loadComicDetails)
+                        HStack {
+                            Text(viewModel.title).font(.headline)
+                            Spacer()
+                            ReloadView(action: loadComicDetails)
+                        }
+                    } else {
+                        if viewModel.loading {
+                            VStack {
+                                Text(viewModel.title).font(.headline)
+                                loadingIndicatorView
+                            }
+                        }
                     }
                 }
             }
@@ -50,21 +61,32 @@ struct ComicDetailView: View {
         #endif
     }
     
-    private func loadComicDetails() async {
-        await viewModel.loadComicDetails(comicId: id)
+    @State private var loadingIndicatorState: Bool = false
+    private var loadingIndicatorView: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 3)
+                .stroke(Color(.systemGray5), lineWidth: 3)
+                .frame(width: 250, height: 3)
+
+            RoundedRectangle(cornerRadius: 3)
+                .stroke(Color.green, lineWidth: 3)
+                .frame(width: 30, height: 3)
+                .offset(x: loadingIndicatorState ? 110 : -110)
+                .animation(Animation.easeInOut(duration: 2).repeatForever(), value: loadingIndicatorState)
+        }.onAppear {
+            loadingIndicatorState.toggle()
+        }
     }
     
-    private var titleView: some View {
-        Text(viewModel.title)
-            .font(.largeTitle)
-            .multilineTextAlignment(.center)
-            .padding()
+    private func loadComicDetails() async {
+        await viewModel.loadComicDetails(comicId: id)
     }
     
     private var descriptionView: some View {
         Text(viewModel.description)
             .font(.body)
             .padding()
+            .animation(Animation.easeIn(duration: 0.2), value: viewModel.description)
     }
     
     private var imageView: some View {
@@ -84,7 +106,7 @@ struct ComicDetailView: View {
                 .scaledToFill()
         }
         .padding()
-        
+        .animation(Animation.easeIn(duration: 0.2), value: viewModel.image)
     }
 }
 
@@ -123,8 +145,10 @@ struct SettingsView: View {
 
 struct ComicDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        ComicDetailView(id: 92260)
-            .preferredColorScheme(.dark)
+        NavigationView {
+            ComicDetailView(id: 92260)
+                .preferredColorScheme(.dark)
+        }
     }
 }
 
