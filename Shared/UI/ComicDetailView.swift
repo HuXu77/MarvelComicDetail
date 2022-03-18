@@ -40,7 +40,11 @@ struct ComicDetailView: View {
                         if viewModel.loading {
                             VStack {
                                 Text(viewModel.title).font(.headline)
+                                #if targetEnvironment(simulator)
                                 loadingIndicatorView
+                                #else
+                                LoadingIndicator()
+                                #endif
                             }
                         }
                     }
@@ -61,6 +65,9 @@ struct ComicDetailView: View {
         #endif
     }
     
+    // There is a bug in the simulator where it will animate incorrectly
+    // unless its included this way.  This is duplicate code of `LoadingIndicator`
+    #if targetEnvironment(simulator)
     @State private var loadingIndicatorState: Bool = false
     private var loadingIndicatorView: some View {
         ZStack {
@@ -77,6 +84,7 @@ struct ComicDetailView: View {
             loadingIndicatorState.toggle()
         }
     }
+    #endif
     
     private func loadComicDetails() async {
         await viewModel.loadComicDetails(comicId: id)
