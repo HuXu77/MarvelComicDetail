@@ -30,8 +30,8 @@ protocol DataSource {
     init(basePath: String)
 }
 
-fileprivate let apiKey = "b18f9a5fda9e80a6ff6c05053b399ecb"
-fileprivate let privateKey = "5f5b65c50397dd3fa35b2cb77633fb7a16028058"
+fileprivate let apiKey = ""
+fileprivate let privateKey = ""
 
 class LiveMarvelAPI: DataSource {
     @Published private var loading: Bool
