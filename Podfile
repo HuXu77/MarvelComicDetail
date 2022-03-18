@@ -1,4 +1,4 @@
-platform :ios, '14.0'
+platform :ios, '15.0'
 
 target 'MarvelComic (iOS)' do
   use_frameworks!
