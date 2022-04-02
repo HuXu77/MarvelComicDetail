@@ -8,7 +8,6 @@
 import SwiftUI
 import Combine
 
-@MainActor
 class ComicDetailViewModel: ObservableObject {
     @Published var loading: Bool = false
     @Published var title: String = "Loading..."
@@ -20,6 +19,8 @@ class ComicDetailViewModel: ObservableObject {
     @Published var showErrorMessage: Bool = false
     
     private var dataSource: DataSource
+    
+    private var task: Task<Void, Never>?
     
     private var cancellable: Cancellable?
     
@@ -36,42 +37,78 @@ class ComicDetailViewModel: ObservableObject {
         return
         #endif
         dataSource = LiveMarvelAPI()
-        cancellable = dataSource.isLoading.sink {
-            self.loading = $0
-        }
+        cancellable = dataSource.isLoadingData.combineLatest(dataSource.isLoadingImage)
+            .receive(on: RunLoop.main)
+            .sink {
+                self.loading = $0.0 || $0.1
+            }
+    }
+    
+    deinit {
+        task?.cancel()
+        cancellable = nil
     }
     
     /**
         Load comic details from the datasource. This loads the data and image.
         - Parameter id: comic ID to load
      */
-    func loadComicDetails(comicId id: Int) async {
+    func loadComicDetails(comicId id: Int) {
         self.resetValuesForLoading()
-        do {
-            let comicData = try await dataSource.getComicDetails(comicId: id)
-            guard let comicInfo = comicData.data?.results?.first else {
-                throw DataError.unableToLoadJson
+        runLoadingTask(comicId: id)
+    }
+    
+    private func runLoadingTask(comicId id: Int) {
+        self.task = Task {
+            do {
+                let comicData = try await dataSource.comicDetails(comicId: id)
+                guard let comicInfo = comicData.data?.results?.first else {
+                    throw DataError.unableToLoadJson
+                }
+                
+                await updateTitleAndDescription(comicData: comicInfo)
+                try await updateImage(thumbnail: comicInfo.thumbnail)
+            } catch {
+                await updateErrorState(error: error)
             }
-            
-            self.title = comicInfo.title ?? "No title"
-            self.description = comicInfo.description ?? "No description"
-            
-            guard let imageData = comicInfo.thumbnail else {
-                throw DataError.unableToLoadImage
-            }
-            guard let thumbnail = try await dataSource.getImage(from: imageData) else {
-                throw DataError.unableToLoadImage
-            }
-            self.image = thumbnail
-
-        } catch {
-            self.errorMessage = error.localizedDescription
-            self.error = true
-            self.image = ComicDetailViewModel.placeholderImage()
-            self.title = "Error"
-            self.description = "Error"
-            self.showErrorMessage = true
         }
+    }
+    
+    private func updateImage(thumbnail: ImageData?) async throws {
+        guard let imageData = thumbnail else {
+            throw DataError.unableToLoadImage
+        }
+        
+        guard let thumbnail = try await dataSource.image(from: imageData) else {
+            throw DataError.unableToLoadImage
+        }
+        await updateImage(image: thumbnail)
+    }
+    
+    @MainActor
+    private func updateTitleAndDescription(comicData: ComicData) {
+        self.title = comicData.title ?? "No title"
+        if let description = comicData.description,
+           !description.isEmpty {
+            self.description = description
+        } else {
+            self.description = "No description"
+        }
+    }
+    
+    @MainActor
+    private func updateImage(image: UIImage) {
+        self.image = image
+    }
+    
+    @MainActor
+    func updateErrorState(error: Error) {
+        self.errorMessage = error.localizedDescription
+        self.error = true
+        self.image = ComicDetailViewModel.placeholderImage()
+        self.title = "Error"
+        self.description = "Error"
+        self.showErrorMessage = true
     }
     
     private func resetValuesForLoading() {

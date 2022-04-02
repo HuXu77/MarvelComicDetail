@@ -12,73 +12,72 @@ import SwiftUI
 import Combine
 
 protocol DataSource {
-    var isLoading: AnyPublisher<Bool, Never> { get }
+    var isLoadingData: AnyPublisher<Bool, Never> { get }
+    var isLoadingImage: AnyPublisher<Bool, Never> { get }
     /**
             Load the `ComicBaseData` from a resource based on ID.
             - Parameter id: comic ID
             - Returns: `ComicBaseData`
             - Throws: Error types, specified by the implementing classes
      */
-    func getComicDetails(comicId id: Int) async throws -> ComicBaseData
+    func comicDetails(comicId id: Int) async throws -> ComicBaseData
     /**
             Load the image using `ImageData` object.
             - Parameter imageData: image data with path and extension
             - Returns: `UIImage?`
             - Throws: Error types, specified by the implementing classes
      */
-    func getImage(from imageData: ImageData) async throws -> UIImage?
+    func image(from imageData: ImageData) async throws -> UIImage?
     init(basePath: String)
 }
 
-fileprivate let apiKey = ""
-fileprivate let privateKey = ""
+fileprivate let apiKey = "b18f9a5fda9e80a6ff6c05053b399ecb"
+fileprivate let privateKey = "5f5b65c50397dd3fa35b2cb77633fb7a16028058"
 
 class LiveMarvelAPI: DataSource {
-    @Published private var loading: Bool
+    @Published private var loadingData: Bool
+    @Published private var loadingImage: Bool
     private var basePath: String
     
-    public lazy var isLoading: AnyPublisher<Bool, Never> = {
-        $loading.eraseToAnyPublisher()
+    public lazy var isLoadingData: AnyPublisher<Bool, Never> = {
+        $loadingData.eraseToAnyPublisher()
+    }()
+    public lazy var isLoadingImage: AnyPublisher<Bool, Never> = {
+        $loadingImage.eraseToAnyPublisher()
     }()
     
     required init(basePath: String = "https://gateway.marvel.com/v1/public/") {
-        self.loading = false
+        self.loadingData = false
+        self.loadingImage = false
         self.basePath = basePath
     }
     
-    func getComicDetails(comicId id: Int) async throws -> ComicBaseData {
-        self.loading = true
+    func comicDetails(comicId id: Int) async throws -> ComicBaseData {
+        self.loadingData = true
         let comicSubPath = "comics/"
         let fullPath = "\(basePath)\(comicSubPath)\(id)?\(generateAuthString())"
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<ComicBaseData, Error>) in
-            AF.request(fullPath, method: .get)
-                .validate()
-                .responseDecodable(of: ComicBaseData.self) { [unowned self] (response) in
-                    self.loading = false
-                if let result = response.value {
-                    continuation.resume(returning: result)
-                    return
-                }
-                if let error = response.error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-            }
+        do {
+            let result = try await AF.request(fullPath, method: .get).serializingDecodable(ComicBaseData.self).value
+            self.loadingData = false
+            return result
+        } catch {
+            self.loadingData = false
+            throw error
         }
     }
     
-    func getImage(from imageData: ImageData) async throws -> UIImage? {
+    func image(from imageData: ImageData) async throws -> UIImage? {
         guard let path = imageData.path,
               let ext = imageData.extension else {
                   return nil
               }
         let fullPath = "\(path).\(ext)"
-        self.loading = true
+        self.loadingImage = true
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<UIImage?, Error>) in
             AF.request(fullPath, method: .get)
                 .validate()
                 .responseData { response in
-                    self.loading = false
+                    self.loadingImage = false
                     if let result = response.value {
                         let image = UIImage(data: result)
                         continuation.resume(returning: image)
@@ -105,23 +104,29 @@ class LiveMarvelAPI: DataSource {
 
 #if DEBUG || TEST
 class MockMarvelAPI: DataSource {
-    @Published private var loading: Bool
+    @Published private var loadingData: Bool
+    @Published private var loadingImage: Bool
     private let basePath: String
 
-    lazy var isLoading: AnyPublisher<Bool, Never> = {
-        $loading.eraseToAnyPublisher()
+    lazy var isLoadingData: AnyPublisher<Bool, Never> = {
+        $loadingData.eraseToAnyPublisher()
+    }()
+    
+    lazy var isLoadingImage: AnyPublisher<Bool, Never> = {
+        $loadingImage.eraseToAnyPublisher()
     }()
 
     required init(basePath: String = "Mock") {
-        self.loading = false
+        self.loadingData = false
+        self.loadingImage = false
         self.basePath = basePath
     }
 
-    func getComicDetails(comicId id: Int) async throws -> ComicBaseData {
-        self.loading = true
+    func comicDetails(comicId id: Int) async throws -> ComicBaseData {
+        self.loadingData = true
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<ComicBaseData, Error>) in
             guard let path = Bundle.main.url(forResource: basePath, withExtension: "json") else {
-                self.loading = false
+                self.loadingData = false
                 continuation.resume(throwing: DataError.unableToLoadJson)
                 return
             }
@@ -129,7 +134,7 @@ class MockMarvelAPI: DataSource {
                 let data = try Data(contentsOf: path, options: .mappedIfSafe)
                 let decoder = JSONDecoder()
                 let comicData = try decoder.decode(ComicBaseData.self, from: data)
-                self.loading = false
+                self.loadingData = false
                 continuation.resume(returning: comicData)
             } catch {
                 continuation.resume(throwing: error)
@@ -137,10 +142,10 @@ class MockMarvelAPI: DataSource {
         }
     }
 
-    func getImage(from imageData: ImageData) async throws -> UIImage? {
-        self.loading = true
+    func image(from imageData: ImageData) async throws -> UIImage? {
+        self.loadingImage = true
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<UIImage?, Error>) in
-            self.loading = false
+            self.loadingImage = false
             guard let path = imageData.path else {
                 continuation.resume(throwing: DataError.unableToLoadImage)
                 return

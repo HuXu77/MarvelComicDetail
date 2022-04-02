@@ -13,7 +13,7 @@ class MarvelComicTests: XCTestCase {
     func testSuccessfulMockDataSource() async throws {
         let dataSource = MockMarvelAPI()
         
-        let comicDetails = try await dataSource.getComicDetails(comicId: 234)
+        let comicDetails = try await dataSource.comicDetails(comicId: 234)
         guard let comicDetail = comicDetails.data?.results?.first else {
             XCTFail("Detail should be available")
             return
@@ -25,7 +25,7 @@ class MarvelComicTests: XCTestCase {
     func testSuccessfulMockImageLoad() async throws {
         let dataSource = MockMarvelAPI()
         
-        let comicDetails = try await dataSource.getComicDetails(comicId: 234)
+        let comicDetails = try await dataSource.comicDetails(comicId: 234)
         guard let comicDetail = comicDetails.data?.results?.first else {
             XCTFail("Detail should be available")
             return
@@ -35,14 +35,14 @@ class MarvelComicTests: XCTestCase {
             return
         }
         
-        let image = try await dataSource.getImage(from: imageData)
+        let image = try await dataSource.image(from: imageData)
         XCTAssertNotNil(image)
     }
     
     func testFailedDataLoad() async throws {
         let dataSource = MockMarvelAPI(basePath: "nil")
         do {
-            let _ = try await dataSource.getComicDetails(comicId: 1231)
+            let _ = try await dataSource.comicDetails(comicId: 1231)
         } catch DataError.unableToLoadJson {
             XCTAssert(true)
             return
@@ -55,7 +55,7 @@ class MarvelComicTests: XCTestCase {
         let dataSource = MockMarvelAPI()
         let imageData = ImageData(path: nil, extension: nil)
         do {
-            let _ = try await dataSource.getImage(from: imageData)
+            let _ = try await dataSource.image(from: imageData)
         } catch DataError.unableToLoadImage {
             XCTAssertTrue(true)
             return

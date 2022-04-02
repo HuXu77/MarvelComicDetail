@@ -20,7 +20,7 @@ struct ComicDetailView: View {
                 imageView
                 descriptionView
             }.task {
-                await loadComicDetails()
+                loadComicDetails()
             }.alert("Error", isPresented: $viewModel.showErrorMessage) {
                 Button("Ok") {}
             } message: {
@@ -53,11 +53,12 @@ struct ComicDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
         #if DEBUG || TEST
             .sheet(isPresented: $showSettingModal, onDismiss: {
-                Task {
-                    await loadComicDetails()
-                }
+                loadComicDetails()
             }) {
                 SettingsView(comicId: $id, isPresented: $showSettingModal)
+            }
+            .onAppear {
+                loadComicDetails()
             }
             .onShake {
                 self.showSettingModal = true
@@ -86,8 +87,8 @@ struct ComicDetailView: View {
     }
     #endif
     
-    private func loadComicDetails() async {
-        await viewModel.loadComicDetails(comicId: id)
+    private func loadComicDetails() {
+        viewModel.loadComicDetails(comicId: id)
     }
     
     private var descriptionView: some View {
